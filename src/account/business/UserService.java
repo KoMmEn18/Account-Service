@@ -24,6 +24,7 @@ public class UserService implements UserDetailsService {
             return false;
         }
 
+        user.setEmail(user.getEmail().toLowerCase());
         userRepository.save(user);
         return true;
     }
