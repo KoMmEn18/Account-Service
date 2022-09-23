@@ -15,6 +15,6 @@ public class PasswordValidator implements ConstraintValidator<NotBreached, Strin
 
     @Override
     public boolean isValid(String passwordField, ConstraintValidatorContext cxt) {
-        return passwordField != null && !breachedPasswords.contains(passwordField);
+        return passwordField == null || !breachedPasswords.contains(passwordField);
     }
 }
