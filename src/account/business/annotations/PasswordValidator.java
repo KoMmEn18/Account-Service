@@ -11,7 +11,7 @@ public class PasswordValidator implements ConstraintValidator<NotBreached, Strin
             "PasswordForSeptember", "PasswordForOctober", "PasswordForNovember", "PasswordForDecember");
 
     @Override
-    public void initialize(NotBreached password) {}
+    public void initialize(NotBreached constraintAnnotation) {}
 
     @Override
     public boolean isValid(String passwordField, ConstraintValidatorContext cxt) {
