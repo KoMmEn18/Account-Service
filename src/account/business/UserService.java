@@ -6,6 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -19,13 +21,21 @@ public class UserService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmailIgnoreCase(email);
+    }
+
+    public boolean exist(String email) {
+        return userRepository.existsByEmailIgnoreCase(email);
+    }
+
     public boolean save(User user) {
         if (userRepository.existsByEmailIgnoreCase(user.getEmail())) {
             return false;
         }
-
         user.setEmail(user.getEmail().toLowerCase());
         userRepository.save(user);
+
         return true;
     }
 

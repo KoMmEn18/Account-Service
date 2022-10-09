@@ -1,6 +1,7 @@
 package account.business;
 
 import account.business.annotations.NotBreached;
+import account.business.annotations.UserExist;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -36,6 +37,7 @@ public class User implements UserDetails {
     @NotBlank
     @Column(unique = true)
     @Pattern(regexp = ".+@acme\\.com")
+    //@UserExist(reversed = true, message = "User exist!")
     private String email;
 
     @NotBlank
@@ -71,7 +73,6 @@ public class User implements UserDetails {
     public void grantAuthority(Role authority) {
         roles.add(authority);
     }
-
 
     @Override
     @JsonIgnore

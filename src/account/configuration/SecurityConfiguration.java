@@ -27,7 +27,7 @@ public class SecurityConfiguration {
                 .csrf().disable().headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
-                .mvcMatchers("/api/auth/signup").permitAll()
+                .mvcMatchers("/api/auth/signup", "/api/acct/**").permitAll()
                 .mvcMatchers("/api/auth/changepass", "/api/empl/**").authenticated()
                 .mvcMatchers("/api/empl/**").hasAnyAuthority("USER", "ACCOUNTANT")
                 .mvcMatchers("/api/acct/**").hasAuthority("ACCOUNTANT")
