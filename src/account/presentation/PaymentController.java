@@ -9,6 +9,7 @@ import account.business.util.PaymentMapper;
 import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -35,26 +36,26 @@ public class PaymentController {
     }
 
     @GetMapping("/empl/payment")
-    public List<PaymentDTO> getEmployeePayments(@AuthenticationPrincipal User user, @RequestParam(required = false) String period) {
-        List<PaymentDTO> payments = List.of();
+    public ResponseEntity<?> getEmployeePayments(@AuthenticationPrincipal User user, @RequestParam(required = false) String period) {
+        List<PaymentDTO> payments;
         if (period == null) {
             payments = paymentService.findPaymentsByEmployee(user)
                     .stream()
                     .map(PaymentMapper::mapToDTO)
                     .collect(Collectors.toList());
-        } else {
-            try {
-                YearMonth periodObject = YearMonth.parse(period, DateTimeFormatter.ofPattern("MM-yyyy"));
-                Payment payment = paymentService.findPaymentByEmployeeAndPeriod(user, periodObject);
-                if (payment != null) {
-                    payments = List.of(PaymentMapper.mapToDTO(payment));
-                }
-            } catch (DateTimeParseException exception) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Period is not valid");
-            }
+
+            return ResponseEntity.ok(payments);
         }
 
-        return payments;
+        PaymentDTO payment;
+        try {
+            YearMonth periodObject = YearMonth.parse(period, DateTimeFormatter.ofPattern("MM-yyyy"));
+            payment = PaymentMapper.mapToDTO(paymentService.findPaymentByEmployeeAndPeriod(user, periodObject));
+        } catch (DateTimeParseException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Period is not valid");
+        }
+
+        return ResponseEntity.ok(payment);
     }
 
     @PostMapping("/acct/payments")

@@ -1,5 +1,6 @@
 package account.configuration;
 
+import account.business.CustomAccessDeniedHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,12 +28,14 @@ public class SecurityConfiguration {
                 .csrf().disable().headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
-                .mvcMatchers("/api/auth/signup", "/api/acct/**").permitAll()
-                .mvcMatchers("/api/auth/changepass", "/api/empl/**").authenticated()
+                .mvcMatchers("/api/auth/signup").permitAll()
+                .mvcMatchers("/api/auth/changepass").authenticated()
                 .mvcMatchers("/api/empl/**").hasAnyAuthority("USER", "ACCOUNTANT")
                 .mvcMatchers("/api/acct/**").hasAuthority("ACCOUNTANT")
-                .mvcMatchers("/api/admin/**").hasAuthority("ADMIN")
+                .mvcMatchers("/api/admin/**").hasAuthority("ADMINISTRATOR")
                 //.anyRequest().authenticated()
+                .and()
+                .exceptionHandling().accessDeniedHandler(accessDeniedHandler())
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -43,5 +46,10 @@ public class SecurityConfiguration {
     @Bean
     public PasswordEncoder getEncoder() {
         return new BCryptPasswordEncoder(13);
+    }
+
+    @Bean
+    public CustomAccessDeniedHandler accessDeniedHandler() {
+        return new CustomAccessDeniedHandler();
     }
 }

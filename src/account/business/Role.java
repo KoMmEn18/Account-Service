@@ -19,6 +19,10 @@ public class Role {
     private long id;
 
     @NotBlank
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String name;
+
+    public Role(String name) {
+        this.name = name;
+    }
 }

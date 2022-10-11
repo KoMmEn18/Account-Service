@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UserExist {
-    String message() default "The user does not exist";
+    String message() default "User not found!";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
     boolean reversed() default false;

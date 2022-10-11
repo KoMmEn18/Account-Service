@@ -2,8 +2,7 @@ package account.business;
 
 import account.business.annotations.NotBreached;
 import account.business.annotations.UserExist;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +15,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -46,13 +46,13 @@ public class User implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Set<Role> roles = new HashSet<>();
 
     @Override
@@ -70,8 +70,27 @@ public class User implements UserDetails {
         return authorities;
     }
 
+    @JsonGetter("roles")
+    public List<String> getRoles() {
+        return roles.stream().map(r -> "ROLE_" + r.getName()).sorted(String::compareTo).collect(Collectors.toList());
+    }
+
     public void grantAuthority(Role authority) {
         roles.add(authority);
+    }
+
+    public void removeAuthority(Role authority) {
+        roles.remove(authority);
+    }
+
+    @JsonIgnore
+    public boolean hasAuthority(String authority) {
+        return getAuthorities().contains(new SimpleGrantedAuthority(authority));
+    }
+
+    @JsonIgnore
+    public boolean isAdmin() {
+        return getAuthorities().contains(new SimpleGrantedAuthority("ADMINISTRATOR"));
     }
 
     @Override
