@@ -1,13 +1,10 @@
 package account.presentation;
 
-import account.business.NewPassword;
-import account.business.User;
-import account.business.UserService;
+import account.business.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,9 +15,8 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private UserService userService;
-
-    private PasswordEncoder passwordEncoder;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public AuthController(UserService userService, PasswordEncoder passwordEncoder) {
@@ -43,8 +39,8 @@ public class AuthController {
         if (passwordEncoder.matches(password.getNewPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The passwords must be different!");
         }
-
         userService.updatePassword(user, passwordEncoder.encode(password.getNewPassword()));
+
         return Map.of("email", user.getEmail(), "status", "The password has been updated successfully");
     }
 }

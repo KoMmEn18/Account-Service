@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataLoader {
 
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
     public DataLoader(RoleRepository roleRepository) {
@@ -18,6 +18,7 @@ public class DataLoader {
 
     private void createRoles() {
         try {
+            roleRepository.save(new Role("AUDITOR"));
             roleRepository.save(new Role("USER"));
             roleRepository.save(new Role("ADMINISTRATOR"));
             roleRepository.save(new Role("ACCOUNTANT"));

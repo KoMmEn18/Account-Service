@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Validated
 public class PaymentController {
 
-    private PaymentService paymentService;
+    private final PaymentService paymentService;
 
     @Autowired
     public PaymentController(PaymentService paymentService) {

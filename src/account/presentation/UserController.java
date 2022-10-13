@@ -1,5 +1,6 @@
 package account.presentation;
 
+import account.business.ChangeLockStatus;
 import account.business.ChangeRole;
 import account.business.User;
 import account.business.UserService;
@@ -19,7 +20,7 @@ public class UserController {
 
     private UserService userService;
 
-    private final Set<String> AVAILABLE_ROLES = Set.of("USER", "ADMINISTRATOR", "ACCOUNTANT");
+    private final Set<String> AVAILABLE_ROLES = Set.of("USER", "ADMINISTRATOR", "ACCOUNTANT", "AUDITOR");
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -40,9 +41,6 @@ public class UserController {
 
         String operation = changeRole.getOperation();
         String role = changeRole.getRole();
-        if (!AVAILABLE_ROLES.contains(role)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found!");
-        }
 
         if (operation.equals("GRANT")) {
             if (user.isAdmin() || role.equals("ADMINISTRATOR")) {
@@ -63,6 +61,26 @@ public class UserController {
         }
 
         return user;
+    }
+
+    @PutMapping("/user/access")
+    public Map<String, String> changeLockStatus(@Valid @RequestBody ChangeLockStatus changeLockStatus) {
+        String email = changeLockStatus.getUser();
+        String operation = changeLockStatus.getOperation();
+
+        Optional<User> userOptional = userService.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!");
+        }
+
+        User user = userOptional.get();
+        if (user.isAdmin() && operation.equals("LOCK")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't lock the ADMINISTRATOR!");
+        }
+
+        userService.updateLockStatus(user, operation.equals("LOCK"));
+
+        return Map.of("status", String.format("User %s %s!", user.getEmail(), operation.equals("LOCK") ? "locked" : "unlocked"));
     }
 
     @DeleteMapping("/user/{email}")

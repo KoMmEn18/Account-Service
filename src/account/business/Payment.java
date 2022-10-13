@@ -1,7 +1,6 @@
 package account.business;
 
 import account.business.util.YearMonthDateAttributeConverter;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +21,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "id", nullable = false)
     private User employee;
 
