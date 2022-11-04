@@ -6,6 +6,7 @@ Simple REST API app to store employees payrolls.
 - Spring Boot among with security component (authorization and authentication)
 - JSON as data transfer
 - H2 database
+- JPA
 
 ## Endpoints
 
